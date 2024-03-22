@@ -15,6 +15,9 @@ pipeline {
                     // Checkout code including tags
                     git branch: 'master', url: 'https://github.com/ganeshwalkoli/angular_project.git', fetchTags: true
 
+                     // Retrieve the latest tag again after potential abort
+                    def latestTag = sh(script: 'git describe --tags $(git rev-list --tags --max-count=1)', returnStdout: true).trim()
+
                     // Retrieve the latest tag
                     def latestTag = sh(script: 'git describe --tags $(git rev-list --tags --max-count=1)', returnStdout: true).trim()
                     
