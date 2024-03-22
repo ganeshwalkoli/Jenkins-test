@@ -9,6 +9,24 @@ pipeline {
     }
 
     stages {
+
+        stage('Check if new tag') {
+            steps {
+                script {
+                    // Retrieve the latest tag
+                    def latestTag = sh(script: 'git describe --tags $(git rev-list --tags --max-count=1)', returnStdout: true).trim()
+                    
+                    // Get the tag that triggered the pipeline
+                    def triggeredTag = env.TAG ?: 'NoTag'
+                    
+                    if (latestTag == triggeredTag) {
+                        currentBuild.result = 'ABORTED'
+                        error("Pipeline aborted because it was triggered by an old tag: $triggeredTag")
+                    }
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
@@ -19,7 +37,7 @@ pipeline {
                     def latestTag = sh(script: 'git describe --tags $(git rev-list --tags --max-count=1)', returnStdout: true).trim()
 
                     // Retrieve the latest tag
-                    def latestTag = sh(script: 'git describe --tags $(git rev-list --tags --max-count=1)', returnStdout: true).trim()
+                    //def latestTag = sh(script: 'git describe --tags $(git rev-list --tags --max-count=1)', returnStdout: true).trim()
                     
                     echo "Latest tag is: $latestTag"
                     
